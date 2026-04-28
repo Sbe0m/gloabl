@@ -518,21 +518,59 @@
       gap: 10px;
     }
 
-    .photo-preview {
+    .media-preview {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 10px;
       margin-top: 8px;
     }
-    .photo-preview img {
+    .media-preview-item {
+      position: relative;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #fafafa;
+      min-height: 110px;
+    }
+    .media-preview-item img,
+    .media-preview-item video {
       width: 100%;
       height: 110px;
       object-fit: cover;
-      border-radius: 12px;
-      border: 1px solid #e5e7eb;
+      display: block;
       background: #fafafa;
     }
-    .photo-empty {
+    .media-badge {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: rgba(17,17,17,0.8);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 4px 7px;
+      border-radius: 999px;
+    }
+    .media-remove-btn {
+      position: absolute;
+      left: 8px;
+      top: 8px;
+      width: 28px;
+      height: 28px;
+      border: none;
+      border-radius: 50%;
+      background: rgba(239, 68, 68, 0.95);
+      color: #fff;
+      font-size: 16px;
+      font-weight: 900;
+      cursor: pointer;
+      z-index: 2;
+      line-height: 1;
+    }
+    .media-remove-btn:hover {
+      background: rgba(220, 38, 38, 1);
+    }
+    .media-empty {
       font-size: 13px;
       color: #777;
       padding: 14px;
@@ -551,20 +589,75 @@
       line-height: 1.7;
       white-space: pre-line;
     }
-    .detail-photo-grid {
+    .detail-media-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 10px;
       margin-top: 12px;
     }
-    .detail-photo-grid img {
+    .detail-media-item {
+      position: relative;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #fafafa;
+      cursor: pointer;
+    }
+    .detail-media-item img,
+    .detail-media-item video {
       width: 100%;
       height: 140px;
       object-fit: cover;
-      border-radius: 12px;
-      border: 1px solid #e5e7eb;
+      display: block;
       background: #fafafa;
+    }
+
+    .viewer-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.88);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 300;
+      padding: 24px;
+    }
+    .viewer-modal.show { display: flex; }
+    .viewer-content {
+      position: relative;
+      max-width: 95vw;
+      max-height: 90vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .viewer-content img,
+    .viewer-content video {
+      max-width: 95vw;
+      max-height: 82vh;
+      border-radius: 16px;
+      background: #000;
+    }
+    .viewer-close {
+      position: absolute;
+      top: -10px;
+      right: -10px;
+      width: 42px;
+      height: 42px;
+      border: none;
+      border-radius: 50%;
+      background: #fff;
+      color: #111;
+      font-size: 20px;
+      font-weight: 900;
       cursor: pointer;
+    }
+    .viewer-hint {
+      color: #fff;
+      font-size: 13px;
+      opacity: 0.9;
     }
 
     .modal {
@@ -754,8 +847,8 @@
       .jobs-grid,
       .signup-options,
       .mini-grid,
-      .detail-photo-grid,
-      .photo-preview {
+      .detail-media-grid,
+      .media-preview {
         grid-template-columns: 1fr;
       }
       .hero-main { padding: 20px; }
@@ -1066,20 +1159,20 @@
       </div>
 
       <div class="field">
-        <label>가게 참고 사진 업로드</label>
+        <label>가게 참고 사진 / 영상 업로드</label>
         <div class="hint" style="margin-bottom:10px;">
           알바생이 처음 와도 바로 적응할 수 있도록
           <strong>가게 배치도, 테이블 번호, 포스기 위치, 쓰레기 버리는 곳, 카운터/주방 위치</strong>
-          등을 참고할 수 있는 사진을 올려주세요.
+          등을 참고할 수 있는 사진이나 영상을 올려주세요.
         </div>
-        <input type="file" id="jobPhotos" accept="image/*" multiple />
-        <div class="hint">여러 장 업로드 가능 · 예: 가게 내부 전경, 포스기, 분리수거 위치, 테이블 배치 사진</div>
+        <input type="file" id="jobMedia" accept="image/*,video/*" multiple />
+        <div class="hint">여러 개 업로드 가능 · 예: 가게 내부 사진, 포스기 영상, 분리수거 위치 사진, 테이블 배치 영상</div>
       </div>
 
       <div class="field">
-        <label>업로드한 사진 미리보기</label>
-        <div id="photoPreview" class="photo-preview">
-          <div class="photo-empty">아직 업로드한 사진이 없습니다.</div>
+        <label>업로드한 미디어 미리보기</label>
+        <div id="mediaPreview" class="media-preview">
+          <div class="media-empty">아직 업로드한 사진/영상이 없습니다.</div>
         </div>
       </div>
 
@@ -1150,9 +1243,9 @@
 
       <div class="detail-panel">
         <div class="profile-head">
-          <h4>가게 참고 사진</h4>
+          <h4>가게 참고 사진 / 영상</h4>
         </div>
-        <div id="detailPhotos" class="detail-photo-grid"></div>
+        <div id="detailMedia" class="detail-media-grid"></div>
       </div>
 
       <div class="detail-panel">
@@ -1169,6 +1262,14 @@
         <button class="btn btn-outline" onclick="closeJobDetailModal()">닫기</button>
         <button class="btn btn-primary" id="detailApplyBtn" onclick="applyFromDetail()">지원하기</button>
       </div>
+    </div>
+  </div>
+
+  <div class="viewer-modal" id="mediaViewerModal">
+    <div class="viewer-content">
+      <button class="viewer-close" onclick="closeMediaViewer()">✕</button>
+      <div id="viewerBody"></div>
+      <div class="viewer-hint">닫기 버튼을 누르면 공고 상세로 돌아갑니다.</div>
     </div>
   </div>
 
@@ -1234,14 +1335,15 @@
     const profileEditModal = document.getElementById('profileEditModal');
     const jobPostModal = document.getElementById('jobPostModal');
     const jobDetailModal = document.getElementById('jobDetailModal');
+    const mediaViewerModal = document.getElementById('mediaViewerModal');
     const applyModal = document.getElementById('applyModal');
     const applicantsModal = document.getElementById('applicantsModal');
     const toast = document.getElementById('toast');
 
-    const STORAGE_ACCOUNTS = 'dtmatch_accounts_v5';
-    const STORAGE_SESSION = 'dtmatch_session_v5';
-    const STORAGE_WORKER_PROFILES = 'dtmatch_worker_profiles_v5';
-    const STORAGE_JOBS = 'dtmatch_jobs_v5';
+    const STORAGE_ACCOUNTS = 'dtmatch_accounts_v7';
+    const STORAGE_SESSION = 'dtmatch_session_v7';
+    const STORAGE_WORKER_PROFILES = 'dtmatch_worker_profiles_v7';
+    const STORAGE_JOBS = 'dtmatch_jobs_v7';
 
     let joinRole = '사장님';
     let currentApplyJobId = null;
@@ -1249,7 +1351,7 @@
     let currentCategory = '전체';
     let currentKeyword = '';
     let editingJobId = null;
-    let editingPhotos = [];
+    let editingMedia = [];
 
     const defaultWorkerProfile = {
       name: '김민지',
@@ -1264,33 +1366,41 @@
       intro: '지각 없이 성실하게 근무했고, 바쁜 점심시간에도 주문 응대와 홀 정리를 빠르게 할 수 있습니다.'
     };
 
-    const samplePhoto1 = 'data:image/svg+xml;utf8,' + encodeURIComponent(`
-      <svg xmlns="http://www.w3.org/2000/svg" width="800" height="500">
-        <rect width="100%" height="100%" fill="#f7efe8"/>
-        <rect x="50" y="80" width="700" height="340" rx="24" fill="#fff"/>
-        <text x="400" y="150" text-anchor="middle" font-size="34" fill="#333" font-family="Arial">가게 내부 배치도 예시</text>
-        <rect x="120" y="220" width="120" height="70" rx="10" fill="#ffd9bf"/>
-        <rect x="280" y="220" width="120" height="70" rx="10" fill="#ffd9bf"/>
-        <rect x="440" y="220" width="120" height="70" rx="10" fill="#ffd9bf"/>
-        <rect x="600" y="220" width="90" height="120" rx="10" fill="#ffe9d8"/>
-        <text x="180" y="262" text-anchor="middle" font-size="22" fill="#444" font-family="Arial">1번</text>
-        <text x="340" y="262" text-anchor="middle" font-size="22" fill="#444" font-family="Arial">2번</text>
-        <text x="500" y="262" text-anchor="middle" font-size="22" fill="#444" font-family="Arial">3번</text>
-        <text x="645" y="280" text-anchor="middle" font-size="20" fill="#444" font-family="Arial">카운터</text>
-      </svg>
-    `);
+    const sampleImage1 = {
+      type: 'image',
+      src: 'data:image/svg+xml;utf8,' + encodeURIComponent(`
+        <svg xmlns="http://www.w3.org/2000/svg" width="800" height="500">
+          <rect width="100%" height="100%" fill="#f7efe8"/>
+          <rect x="50" y="80" width="700" height="340" rx="24" fill="#fff"/>
+          <text x="400" y="150" text-anchor="middle" font-size="34" fill="#333" font-family="Arial">가게 내부 배치도 예시</text>
+          <rect x="120" y="220" width="120" height="70" rx="10" fill="#ffd9bf"/>
+          <rect x="280" y="220" width="120" height="70" rx="10" fill="#ffd9bf"/>
+          <rect x="440" y="220" width="120" height="70" rx="10" fill="#ffd9bf"/>
+          <rect x="600" y="220" width="90" height="120" rx="10" fill="#ffe9d8"/>
+          <text x="180" y="262" text-anchor="middle" font-size="22" fill="#444" font-family="Arial">1번</text>
+          <text x="340" y="262" text-anchor="middle" font-size="22" fill="#444" font-family="Arial">2번</text>
+          <text x="500" y="262" text-anchor="middle" font-size="22" fill="#444" font-family="Arial">3번</text>
+          <text x="645" y="280" text-anchor="middle" font-size="20" fill="#444" font-family="Arial">카운터</text>
+        </svg>
+      `),
+      name: 'sample-layout'
+    };
 
-    const samplePhoto2 = 'data:image/svg+xml;utf8,' + encodeURIComponent(`
-      <svg xmlns="http://www.w3.org/2000/svg" width="800" height="500">
-        <rect width="100%" height="100%" fill="#eef5ff"/>
-        <rect x="60" y="70" width="680" height="360" rx="20" fill="#fff"/>
-        <text x="400" y="135" text-anchor="middle" font-size="34" fill="#333" font-family="Arial">포스기 위치 예시</text>
-        <rect x="180" y="190" width="440" height="150" rx="20" fill="#dbeafe"/>
-        <rect x="300" y="160" width="160" height="90" rx="12" fill="#93c5fd"/>
-        <text x="380" y="220" text-anchor="middle" font-size="24" fill="#1e3a8a" font-family="Arial">POS</text>
-        <text x="400" y="390" text-anchor="middle" font-size="24" fill="#444" font-family="Arial">카운터 오른쪽에 위치</text>
-      </svg>
-    `);
+    const sampleImage2 = {
+      type: 'image',
+      src: 'data:image/svg+xml;utf8,' + encodeURIComponent(`
+        <svg xmlns="http://www.w3.org/2000/svg" width="800" height="500">
+          <rect width="100%" height="100%" fill="#eef5ff"/>
+          <rect x="60" y="70" width="680" height="360" rx="20" fill="#fff"/>
+          <text x="400" y="135" text-anchor="middle" font-size="34" fill="#333" font-family="Arial">포스기 위치 예시</text>
+          <rect x="180" y="190" width="440" height="150" rx="20" fill="#dbeafe"/>
+          <rect x="300" y="160" width="160" height="90" rx="12" fill="#93c5fd"/>
+          <text x="380" y="220" text-anchor="middle" font-size="24" fill="#1e3a8a" font-family="Arial">POS</text>
+          <text x="400" y="390" text-anchor="middle" font-size="24" fill="#444" font-family="Arial">카운터 오른쪽에 위치</text>
+        </svg>
+      `),
+      name: 'sample-pos'
+    };
 
     const defaultJobs = [
       {
@@ -1305,7 +1415,7 @@
         location: '제주대학교 도보 5분',
         work: '홀서빙, 주문 응대, 간단한 정리',
         guide: '포스기는 카운터 오른쪽에 있고, 테이블 번호는 1번부터 4번까지 창가 쪽 순서입니다. 일반쓰레기와 음식물쓰레기는 가게 뒤편 초록 통에 버리면 됩니다.',
-        photos: [samplePhoto1, samplePhoto2],
+        media: [sampleImage1, sampleImage2],
         needsCert: true,
         status: 'open',
         createdAtLabel: '오늘 마감',
@@ -1323,7 +1433,7 @@
         location: '공대 앞',
         work: '카운터 응대, 음료 전달, 매장 정리',
         guide: '주문은 앞 카운터에서 받고, 음료 픽업대는 왼쪽입니다. 사용한 컵은 싱크대 뒤편 분리수거 통에 정리해 주세요.',
-        photos: [],
+        media: [],
         needsCert: false,
         status: 'open',
         createdAtLabel: '1시간 전 등록',
@@ -1341,7 +1451,7 @@
         location: '학생회관 1층',
         work: '마감 정리, 홀 청소, 간단한 재고 정리',
         guide: '마감 체크리스트는 카운터 안쪽 벽에 붙어 있습니다. 쓰레기 배출은 마감 후 직원 출입문 방향으로 이동하면 됩니다.',
-        photos: [],
+        media: [],
         needsCert: false,
         status: 'open',
         createdAtLabel: '상시 모집',
@@ -1401,6 +1511,10 @@
     function closeProfileEditor() { profileEditModal.classList.remove('show'); }
     function closeJobPostModal() { jobPostModal.classList.remove('show'); }
     function closeJobDetailModal() { jobDetailModal.classList.remove('show'); }
+    function closeMediaViewer() {
+      mediaViewerModal.classList.remove('show');
+      document.getElementById('viewerBody').innerHTML = '';
+    }
     function closeApply() { applyModal.classList.remove('show'); }
     function closeApplicantsModal() { applicantsModal.classList.remove('show'); }
 
@@ -1592,13 +1706,19 @@
 
     function openJobPostModal() {
       const session = getSession();
-      if (!session || session.role !== '사장님') {
+
+      if (!session) {
+        showToast('먼저 로그인해주세요.');
+        return;
+      }
+
+      if (session.role !== '사장님') {
         showToast('사장님 계정으로 로그인해야 공고를 올릴 수 있어요.');
         return;
       }
 
       editingJobId = null;
-      editingPhotos = [];
+      editingMedia = [];
 
       document.getElementById('jobModalTitle').textContent = '공고 올리기';
       document.getElementById('jobSubmitBtn').textContent = '공고 등록하기';
@@ -1612,9 +1732,9 @@
       document.getElementById('jobLocation').value = '';
       document.getElementById('jobGuide').value = '';
       document.getElementById('jobNeedCert').value = 'yes';
-      document.getElementById('jobPhotos').value = '';
+      document.getElementById('jobMedia').value = '';
 
-      renderPhotoPreview([]);
+      renderMediaPreview(editingMedia);
       searchAddressOnMap(true);
       jobPostModal.classList.add('show');
     }
@@ -1630,7 +1750,7 @@
       }
 
       editingJobId = jobId;
-      editingPhotos = [...(job.photos || [])];
+      editingMedia = JSON.parse(JSON.stringify(job.media || []));
 
       document.getElementById('jobModalTitle').textContent = '공고 수정';
       document.getElementById('jobSubmitBtn').textContent = '공고 수정하기';
@@ -1644,9 +1764,9 @@
       document.getElementById('jobLocation').value = job.location || '';
       document.getElementById('jobGuide').value = job.guide || '';
       document.getElementById('jobNeedCert').value = job.needsCert ? 'yes' : 'no';
-      document.getElementById('jobPhotos').value = '';
+      document.getElementById('jobMedia').value = '';
 
-      renderPhotoPreview(editingPhotos);
+      renderMediaPreview(editingMedia);
       searchAddressOnMap(true);
       jobPostModal.classList.add('show');
     }
@@ -1680,50 +1800,82 @@
       }
     }
 
-    function previewJobPhotos() {
-      const input = document.getElementById('jobPhotos');
+    function previewJobMedia() {
+      const input = document.getElementById('jobMedia');
       const files = Array.from(input.files || []);
 
-      if (!files.length) {
-        renderPhotoPreview(editingPhotos);
-        return;
-      }
+      if (!files.length) return;
 
       const promises = files.map(file => {
         return new Promise(resolve => {
-          if (!file.type.startsWith('image/')) {
-            resolve(null);
-            return;
-          }
-
           const reader = new FileReader();
           reader.onload = function (e) {
-            resolve(e.target.result);
+            const type = file.type.startsWith('video/') ? 'video' : 'image';
+            resolve({
+              type,
+              src: e.target.result,
+              name: file.name
+            });
           };
           reader.readAsDataURL(file);
         });
       });
 
       Promise.all(promises).then(results => {
-        editingPhotos = results.filter(Boolean);
-        renderPhotoPreview(editingPhotos);
+        const validResults = results.filter(Boolean);
+        editingMedia = [...editingMedia, ...validResults];
+        renderMediaPreview(editingMedia);
+        input.value = '';
       });
     }
 
-    function renderPhotoPreview(photos) {
-      const preview = document.getElementById('photoPreview');
+    function removeEditingMedia(index) {
+      editingMedia.splice(index, 1);
+      renderMediaPreview(editingMedia);
+      showToast('선택한 미디어를 제거했습니다.');
+    }
+
+    function renderMediaPreview(mediaList) {
+      const preview = document.getElementById('mediaPreview');
       preview.innerHTML = '';
 
-      if (!photos.length) {
-        preview.innerHTML = '<div class="photo-empty">아직 업로드한 사진이 없습니다.</div>';
+      if (!mediaList.length) {
+        preview.innerHTML = '<div class="media-empty">아직 업로드한 사진/영상이 없습니다.</div>';
         return;
       }
 
-      photos.forEach(src => {
-        const img = document.createElement('img');
-        img.src = src;
-        img.alt = '업로드 미리보기';
-        preview.appendChild(img);
+      mediaList.forEach((item, index) => {
+        const box = document.createElement('div');
+        box.className = 'media-preview-item';
+
+        const removeBtn = document.createElement('button');
+        removeBtn.className = 'media-remove-btn';
+        removeBtn.type = 'button';
+        removeBtn.textContent = '×';
+        removeBtn.onclick = function () {
+          removeEditingMedia(index);
+        };
+
+        const badge = document.createElement('div');
+        badge.className = 'media-badge';
+        badge.textContent = item.type === 'video' ? '영상' : '사진';
+
+        if (item.type === 'video') {
+          const video = document.createElement('video');
+          video.src = item.src;
+          video.muted = true;
+          video.playsInline = true;
+          box.appendChild(video);
+        } else {
+          const img = document.createElement('img');
+          img.src = item.src;
+          img.alt = item.name || '업로드 이미지';
+          box.appendChild(img);
+        }
+
+        box.appendChild(removeBtn);
+        box.appendChild(badge);
+        preview.appendChild(box);
       });
     }
 
@@ -1767,12 +1919,12 @@
         job.location = location;
         job.guide = guide;
         job.needsCert = needsCert;
-        job.photos = [...editingPhotos];
+        job.media = JSON.parse(JSON.stringify(editingMedia));
 
         setJobs(jobs);
         closeJobPostModal();
         editingJobId = null;
-        editingPhotos = [];
+        editingMedia = [];
         renderJobs();
         showToast('공고가 수정되었습니다.');
         return;
@@ -1790,7 +1942,7 @@
         location,
         work,
         guide,
-        photos: [...editingPhotos],
+        media: JSON.parse(JSON.stringify(editingMedia)),
         needsCert,
         status: 'open',
         createdAtLabel: '방금 등록',
@@ -1799,7 +1951,7 @@
 
       setJobs(jobs);
       closeJobPostModal();
-      editingPhotos = [];
+      editingMedia = [];
       setCategoryFilter('전체');
       renderJobs();
       scrollToId('jobs');
@@ -1825,19 +1977,37 @@
       document.getElementById('detailMapFrame').src =
         `https://maps.google.com/maps?q=${encodeURIComponent(job.location || '제주대학교')}&z=15&output=embed`;
 
-      const photoWrap = document.getElementById('detailPhotos');
-      photoWrap.innerHTML = '';
+      const mediaWrap = document.getElementById('detailMedia');
+      mediaWrap.innerHTML = '';
 
-      if (job.photos && job.photos.length) {
-        job.photos.forEach((src, index) => {
-          const img = document.createElement('img');
-          img.src = src;
-          img.alt = `가게 참고 사진 ${index + 1}`;
-          img.onclick = () => window.open(src, '_blank');
-          photoWrap.appendChild(img);
+      if (job.media && job.media.length) {
+        job.media.forEach((item, index) => {
+          const box = document.createElement('div');
+          box.className = 'detail-media-item';
+          box.onclick = () => openMediaViewer(item);
+
+          const badge = document.createElement('div');
+          badge.className = 'media-badge';
+          badge.textContent = item.type === 'video' ? '영상' : '사진';
+
+          if (item.type === 'video') {
+            const video = document.createElement('video');
+            video.src = item.src;
+            video.muted = true;
+            video.playsInline = true;
+            box.appendChild(video);
+          } else {
+            const img = document.createElement('img');
+            img.src = item.src;
+            img.alt = `가게 참고 미디어 ${index + 1}`;
+            box.appendChild(img);
+          }
+
+          box.appendChild(badge);
+          mediaWrap.appendChild(box);
         });
       } else {
-        photoWrap.innerHTML = '<div class="photo-empty">업로드된 참고 사진이 없습니다.</div>';
+        mediaWrap.innerHTML = '<div class="media-empty">업로드된 참고 사진/영상이 없습니다.</div>';
       }
 
       const session = getSession();
@@ -1860,6 +2030,26 @@
       }
 
       jobDetailModal.classList.add('show');
+    }
+
+    function openMediaViewer(item) {
+      const viewerBody = document.getElementById('viewerBody');
+      viewerBody.innerHTML = '';
+
+      if (item.type === 'video') {
+        const video = document.createElement('video');
+        video.src = item.src;
+        video.controls = true;
+        video.autoplay = true;
+        viewerBody.appendChild(video);
+      } else {
+        const img = document.createElement('img');
+        img.src = item.src;
+        img.alt = '전체화면 이미지';
+        viewerBody.appendChild(img);
+      }
+
+      mediaViewerModal.classList.add('show');
     }
 
     function applyFromDetail() {
@@ -2017,11 +2207,9 @@
 
     function setCategoryFilter(category) {
       currentCategory = category;
-
       document.querySelectorAll('.category-chip').forEach(chip => {
         chip.classList.toggle('active', chip.textContent.trim() === category);
       });
-
       renderJobs();
     }
 
@@ -2033,7 +2221,6 @@
     function renderHistory(targetId, list) {
       const el = document.getElementById(targetId);
       el.innerHTML = '';
-
       (list && list.length ? list : ['등록된 이력이 없습니다.']).forEach(item => {
         const li = document.createElement('li');
         li.textContent = item;
@@ -2102,7 +2289,7 @@
             <div>💰 시급 ${escapeHtml(job.pay)}</div>
             <div>📍 ${escapeHtml(job.location)}</div>
             <div>${job.needsCert ? '📄 보건증 필수' : '📄 보건증 선택'}</div>
-            <div>📷 참고 사진 ${(job.photos && job.photos.length) ? job.photos.length + '장' : '없음'}</div>
+            <div>🎞 참고 미디어 ${(job.media && job.media.length) ? job.media.length + '개' : '없음'}</div>
             <div>🧾 ${escapeHtml(job.work)}</div>
           </div>
 
@@ -2202,7 +2389,7 @@
     }
 
     document.getElementById('jobLocation').addEventListener('keydown', searchAddressFromEnter);
-    document.getElementById('jobPhotos').addEventListener('change', previewJobPhotos);
+    document.getElementById('jobMedia').addEventListener('change', previewJobMedia);
 
     window.addEventListener('click', (e) => {
       if (e.target === signupModal) closeSignup();
@@ -2211,8 +2398,9 @@
       if (e.target === profileEditModal) closeProfileEditor();
       if (e.target === jobPostModal) closeJobPostModal();
       if (e.target === jobDetailModal) closeJobDetailModal();
-      if (e.target === applyModal) closeApply();
       if (e.target === applicantsModal) closeApplicantsModal();
+      if (e.target === mediaViewerModal) closeMediaViewer();
+      if (e.target === applyModal) closeApply();
     });
 
     getJobs();
